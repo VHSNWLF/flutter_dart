@@ -18,6 +18,7 @@ class _MyFirstPageState extends State<MyFirstPage> {
   bool _showLoginClearIcon = false;
   bool _showSenhaClearIcon = false;
   bool _showPassword = false;
+   bool _isHovered = false;
   late TextEditingController _senhaController;
   TextEditingController controlaLoginTexto = TextEditingController();
   TextEditingController controlaSenhaTexto = TextEditingController();
@@ -33,8 +34,8 @@ class _MyFirstPageState extends State<MyFirstPage> {
     _senhaController = TextEditingController();
 
     listaUser = [
-      Usuarios("dani_", 12345678, false),
-      Usuarios("sysale", 987654321, true),
+      Usuarios("dani_", "12345678", false),
+      Usuarios("sysale", "987654321", true),
     ];
   }
 
@@ -57,14 +58,18 @@ class _MyFirstPageState extends State<MyFirstPage> {
           child: Column(
             children: [
               SizedBox(
-                height: 80,
+                height: 120,
               ),
+
+              Text("SYSALE", style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold, fontFamily: "TAN Nimbus", color: Color.fromARGB(255, 160, 205, 207),),),
+              Text("Sistema de Vendas", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, fontFamily: "TAN Nimbus", color: Color.fromARGB(255, 160, 205, 207)),),
+              SizedBox(height: 40,),
               SizedBox(
                 width: 550,
                 child: Image.asset('assets/images/login.png'),
               ),
               SizedBox(
-                height: 50,
+                height: 15,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -118,169 +123,198 @@ class _MyFirstPageState extends State<MyFirstPage> {
                 height: 20,
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextFormField(
-                  focusNode: _senhaFocusNode,
-                  controller: controlaSenhaTexto,
-                  onChanged: (value) {
-                    setState(() {
-                      _showSenhaClearIcon = value.isNotEmpty;
-                    });
-                  },
-                  obscureText: !_showPassword,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock),
-                    suffixIcon: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _showPassword = !_showPassword;
-                        });
-                      },
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: Icon(_showPassword
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                      ),
-                    ),
-                    labelText: "Senha",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.cyan),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira a senha.';
-                    }
-                    if (value.length < 8) {
-                      return 'A senha deve ter pelo menos 8 dígitos.';
-                    }
-                    return null;
-                  },
-                ),
-              ),
+  padding: EdgeInsets.symmetric(horizontal: 20.0),
+  child: TextFormField(
+    focusNode: _senhaFocusNode,
+    controller: controlaSenhaTexto,
+    onChanged: (value) {
+      setState(() {
+        _showSenhaClearIcon = value.isNotEmpty;
+      });
+    },
+    obscureText: !_showPassword,
+    keyboardType: TextInputType.text, // Alterado para text
+    decoration: InputDecoration(
+      prefixIcon: Icon(Icons.lock),
+      suffixIcon: GestureDetector(
+        onTap: () {
+          setState(() {
+            _showPassword = !_showPassword;
+          });
+        },
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Icon(_showPassword
+              ? Icons.visibility
+              : Icons.visibility_off),
+        ),
+      ),
+      labelText: "Senha",
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.cyan),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      contentPadding:
+          EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+    ),
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return 'Por favor, insira a senha.';
+      }
+      if (value.length < 8) {
+        return 'A senha deve ter pelo menos 8 dígitos.';
+      }
+      return null;
+    },
+  ),
+),
+
               SizedBox(
                 height: 20,
               ),
               ElevatedButton(
-                onPressed: () {
-                  if (chaveValidacao.currentState!.validate()) {
-                    loginTexto = controlaLoginTexto.text;
-                    senhaTexto = int.parse(controlaSenhaTexto.text);
+  onPressed: () {
+    if (chaveValidacao.currentState!.validate()) {
+      loginTexto = controlaLoginTexto.text;
+      String senhaTexto = controlaSenhaTexto.text; // Altere para String
 
-                    // verifica se o login e a senha correspondem a algum usuário falso
-                    bool loginValido = false;
-                    for (var user in listaUser) {
-                      if (user.login == loginTexto &&
-                          user.senha == senhaTexto) {
-                        loginValido = true;
-                        break;
-                      }
-                    }
-                    if (loginValido) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Row(
-                              children: [
-                                Icon(Icons.check),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text('Seja bem-vindo(a) ' + loginTexto + "!"),
-                              ],
-                            ),
-                            content: 
-                                SizedBox(height: 150, width: 150, child: Image.asset('assets/images/check.png'),), 
-                                
-                                
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              MyHomePage(loginTexto)));
-                                },
-                                child: Text(
-                                  'OK',
-                                  style: TextStyle(color: Colors.cyan),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Row(
-                              children: [
-                                Icon(Icons.error),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text('Login ou senha incorretos!'),
-                              ],
-                            ),
-                            content: 
-                            SizedBox(height: 150, width: 150, child: Image.asset('assets/images/error.png'),),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text(
-                                  'OK',
-                                  style: TextStyle(color: Colors.cyan),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(20.0),
-                  minimumSize: Size(200, 50),
-                  backgroundColor: Colors.cyan[300],
-                ),
-                child: Text(
-                  "Entrar",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
-                ),
+      // Verifica se o login e a senha correspondem a algum usuário
+      bool loginValido = false;
+      for (var user in listaUser) {
+        if (user.login == loginTexto && user.senha == senhaTexto) {
+          loginValido = true;
+          break;
+        }
+      }
+      if (loginValido) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.check),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text('Seja bem-vindo(a) ' + loginTexto + "!"),
+                ],
               ),
+              content: SizedBox(height: 150, width: 150, child: Image.asset('assets/images/check.png')),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyHomePage(loginTexto)));
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.cyan),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.error),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text('Login ou senha incorretos!'),
+                ],
+              ),
+              content: SizedBox(height: 150, width: 150, child: Image.asset('assets/images/error.png')),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.cyan),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+  },
+  style: ElevatedButton.styleFrom(
+    padding: EdgeInsets.all(20.0),
+    minimumSize: Size(200, 50),
+    backgroundColor: Color.fromARGB(255, 160, 205, 207),
+  ),
+  child: Text(
+    "Entrar",
+    style: TextStyle(
+        fontWeight: FontWeight.bold, color: Colors.white),
+  ),
+),
+
+
               SizedBox(
                 height: 20,
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MyPassword()));
-                  },
-                  child: Text(
-                    "Esqueceu a senha? Clique aqui",
-                    style: TextStyle(color: Colors.cyan[200]),
+
+             Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Esqueceu a senha?",
+              style: TextStyle(color: Colors.black, fontSize: 15),
+            ),
+            SizedBox(width: 5), // Adiciona um espaço entre os textos
+            MouseRegion(
+              onEnter: (_) {
+                setState(() {
+                  _isHovered = true;
+                });
+              },
+              onExit: (_) {
+                setState(() {
+                  _isHovered = false;
+                });
+              },
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyPassword()),
+                  );
+                },
+                child: Text(
+                  "Clique Aqui",
+                  style: TextStyle(
+                     color: _isHovered
+                        ? Color.fromARGB(255, 129, 174, 177) // Cor quando hover
+                        : Color.fromARGB(255, 160, 205, 207), // Cor padrão
+                    fontWeight: FontWeight.bold,
+                    decoration: _isHovered
+                        ? TextDecoration.underline 
+                        : TextDecoration.none, 
+                        decorationColor: Color.fromARGB(255, 143, 183, 185), 
                   ),
                 ),
               ),
+            ),
+          ],
+        ),
             ],
           ),
         ),
